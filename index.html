@@ -99,6 +99,9 @@
 </div>
 
 <script>
+  // URL della Web App Apps Script che fa da backend (Sheets + Bot Telegram)
+  var API_URL = 'https://script.google.com/macros/s/AKfycbxlslIIToDJIDjq9UdlaOZHqOQxK1zoKoLqcCWc8VSLv4nEORDQ8oPwf7p31CrAJVzofw/exec';
+
   // Login Widget ufficiale di Telegram (https://telegram.org/widgets/login)
   // data-request-access="write" -> all'utente compare l'opzione "Allow Messages"
   (function () {
@@ -124,7 +127,7 @@
       extra || {}
     );
     // Content-Type text/plain per evitare la preflight CORS su Apps Script
-    return fetch(window.location.href, {
+    return fetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify(body)
