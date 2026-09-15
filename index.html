@@ -150,21 +150,15 @@
   function enterGB() {
     document.getElementById('landing').classList.add('hidden');
     document.getElementById('gb').classList.remove('hidden');
-    load();
-  }
-
-  function load() {
-    api('getOrder').then(function (res) {
-      if (!res.ok) {
+    document.getElementById('gbContent').innerHTML =
+      '<div class="card"><div class="muted">Ti sto portando al modulo d\'ordine…</div></div>';
+    api('getFormUrl').then(function (res) {
+      if (!res.ok || !res.url) {
         document.getElementById('gbContent').innerHTML =
           '<div class="card"><span class="warn">' + (res.error || 'Errore') + '</span></div>';
         return;
       }
-      if (res.noOrder) {
-        renderNoOrder(res);
-        return;
-      }
-      renderOrder(res.order);
+      window.top.location.href = res.url;
     }).catch(function () {
       document.getElementById('gbContent').innerHTML =
         '<div class="card"><span class="warn">Errore di connessione. Riprova.</span></div>';
