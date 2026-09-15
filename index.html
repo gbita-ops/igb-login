@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <base target="_top">
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>iGB</title>
   <style>
     * { box-sizing: border-box; }
     body {
@@ -14,30 +14,40 @@
     .wrap { max-width: 460px; margin: 0 auto; }
     h1 { font-size: 26px; margin: 18px 0 10px; }
     p { line-height: 1.55; color: #b9bdd0; }
-    .box {
+    a { color: #6cb4ff; }
+    .box, .card {
       background: #181c30; border: 1px solid #262b4a;
-      border-radius: 14px; padding: 18px; margin: 14px 0;
+      border-radius: 14px; margin: 12px 0;
     }
-    .box h3 { margin: 0 0 8px; font-size: 16px; color: #fff; }
+    .box { padding: 18px; }
+    .card { padding: 16px; }
+    .box h3, .card h3 { margin: 0 0 8px; font-size: 16px; color: #fff; }
     .box ul { margin: 6px 0 0; padding-left: 18px; }
     .box li { margin: 6px 0; color: #b9bdd0; line-height: 1.5; font-size: 14.5px; }
-    #widget { display: flex; justify-content: center; margin: 22px 0 6px; }
-    .tg-login-widget { min-width: 200px; }
+    #widget { display: flex; justify-content: center; margin: 22px 0 6px; min-height: 40px; }
     .hint { text-align: center; font-size: 13px; color: #7c81a0; margin-top: 4px; }
-    .card {
-      background: #181c30; border: 1px solid #262b4a;
-      border-radius: 14px; padding: 16px; margin: 12px 0;
-    }
-    .card h3 { margin: 0 0 10px; font-size: 15.5px; color: #fff; }
-    .muted { color: #8a8fae; font-size: 13.5px; margin-top: 4px; }
+    .row { display: flex; justify-content: space-between; gap: 10px; padding: 5px 0; font-size: 14.5px; }
+    .row .n { color: #b9bdd0; }
+    .row .v { font-weight: 600; white-space: nowrap; }
+    .total { margin-top: 8px; padding-top: 10px; border-top: 1px solid #262b4a; font-weight: 700; }
+    .ok { color: #4ade80; font-weight: 700; }
     .warn { color: #f87171; font-weight: 700; }
-    button {
-      width: 100%; padding: 13px; border: none; border-radius: 11px;
-      background: #262b4a; color: #cfd3e8; font-size: 15px; font-weight: 600;
-      margin-top: 10px; cursor: pointer;
+    .wait { color: #fbbf24; font-weight: 700; }
+    .muted { color: #8a8fae; font-size: 13.5px; margin-top: 4px; line-height: 1.45; }
+    .notes { white-space: pre-wrap; }
+    button, .btn {
+      display: block; width: 100%; padding: 13px; border: none; border-radius: 11px;
+      background: #3390ec; color: #fff; font-size: 15px; font-weight: 600;
+      margin-top: 10px; cursor: pointer; text-align: center; text-decoration: none;
+      font-family: inherit;
     }
-    #status { min-height: 20px; margin-top: 10px; font-size: 14px; text-align: center; }
-    .hidden { display: none; }
+    button:disabled { opacity: .5; cursor: default; }
+    button:focus-visible, .btn:focus-visible, input:focus-visible { outline: 2px solid #6cb4ff; outline-offset: 2px; }
+    button.secondary, .btn.secondary { background: #262b4a; color: #cfd3e8; }
+    input[type=file] { margin-top: 8px; width: 100%; color: #b9bdd0; font-size: 13.5px; }
+    #status { min-height: 20px; margin: 10px 0; font-size: 14px; text-align: center; }
+    #status.ok, #status.warn { font-weight: 600; }
+    .hidden { display: none !important; }
     .logo { font-size: 40px; text-align: center; }
   </style>
 </head>
@@ -47,129 +57,406 @@
   <!-- ================= LANDING / LOGIN ================= -->
   <div id="landing">
     <div class="logo">✨</div>
-    <h1>Ciao! ✨</h1>
-    <p>Bello vederti qui! Accedi con Telegram per raggiungere il modulo d'ordine del <b>group buy</b>.</p>
+    <h1>Hello awesome being! ✨</h1>
+    <p>Great that you found our little community!<br>
+       Log in with Telegram to access the <b>iGB area</b>.</p>
 
     <div id="widget"></div>
-    <div class="hint">Dopo il login la sessione resta salvata su questo dispositivo.</div>
+    <div class="hint" id="loginHint">Your login stays active in this tab for up to 24 hours.</div>
+    <div id="landingStatus" class="hint warn"></div>
 
     <div class="box">
-      <h3>📱 Login da mobile</h3>
+      <h3>📱 Mobile login</h3>
       <ul>
-        <li>Da smartphone apri questa pagina in <b>Safari/Chrome</b>.</li>
-        <li>Il login non funziona nel browser interno di Telegram.</li>
+        <li>On mobile, open this page in <b>Safari or Chrome</b>.</li>
+        <li>Login does not work in Telegram's in-app browser.</li>
       </ul>
     </div>
 
     <div class="box">
-      <h3>✅ Dopo il login</h3>
+      <h3>✅ After login</h3>
       <ul>
-        <li>Attiva <b>Consenti Messaggi</b> quando Telegram te lo chiede.</li>
-        <li>Se te lo sei perso, apri semplicemente il bot una volta a mano.</li>
-        <li>Serve per poterti scrivere aggiornamenti importanti sul group buy.</li>
+        <li>Please enable <b>Allow messages</b> in Telegram when you approve the login.</li>
+        <li>If you miss it, simply <b>open the bot</b> once and send any message.</li>
+        <li>We need this to send you important iGB updates (payment confirmation, shipping).</li>
       </ul>
     </div>
 
     <div class="box">
       <h3>🔒 Privacy</h3>
       <ul>
-        <li>Il sistema usa Telegram solo per il login.</li>
-        <li><b>Non</b> riceviamo mai il tuo numero di telefono da Telegram.</li>
-        <li>I dati servono solo a coordinare il group buy e vengono eliminati a chiusura.</li>
+        <li>The iGB system uses Telegram for login.</li>
+        <li>We <b>never</b> receive your phone number from Telegram.</li>
+        <li>Your data is only used to coordinate the iGB and is deleted once the iGB is completed.</li>
       </ul>
     </div>
   </div>
 
-  <!-- ================= REDIRECT AL FORM ================= -->
+  <!-- ================= AREA GB (dopo login) ================= -->
   <div id="gb" class="hidden">
+    <div id="status" role="status" aria-live="polite"></div>
     <div id="gbContent"></div>
-    <div id="status"></div>
-    <button id="logoutBtn">Esci</button>
+    <button class="secondary" id="refreshBtn" type="button">Refresh</button>
+    <button class="secondary" id="logoutBtn" type="button">Log out</button>
   </div>
 
 </div>
 
 <script>
-  // URL della Web App Apps Script che fa da backend (Sheets + Bot Telegram)
+  // ---------------------------------------------------------------------
+  // Configurazione
+  // ---------------------------------------------------------------------
+  // URL /exec del deployment Apps Script (backend: Sheets + bot Telegram)
   var API_URL = 'https://script.google.com/macros/s/AKfycbxlslIIToDJIDjq9UdlaOZHqOQxK1zoKoLqcCWc8VSLv4nEORDQ8oPwf7p31CrAJVzofw/exec';
+  // Username del bot (senza @). Il dominio di questa pagina va registrato
+  // su BotFather con /setdomain.
+  var BOT_USERNAME = 'italiangraygb_bot';
+  var AUTH_KEY = 'igb_auth';
+  var MAX_FILE_BYTES = 10 * 1024 * 1024;
+  var ACCEPTED_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
 
-  // Login Widget ufficiale di Telegram (https://telegram.org/widgets/login)
-  // data-request-access="write" -> all'utente compare l'opzione "Consenti Messaggi"
-  (function () {
+  // ---------------------------------------------------------------------
+  // Sessione (sessionStorage con fallback in memoria)
+  // ---------------------------------------------------------------------
+  var memoryAuth = null;
+  function saveAuth(auth) {
+    memoryAuth = auth;
+    try { sessionStorage.setItem(AUTH_KEY, JSON.stringify(auth)); } catch (e) {}
+  }
+  function loadAuth() {
+    if (memoryAuth) return memoryAuth;
+    try {
+      var raw = sessionStorage.getItem(AUTH_KEY);
+      memoryAuth = raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      memoryAuth = null;
+    }
+    return memoryAuth;
+  }
+  function clearAuth() {
+    memoryAuth = null;
+    try { sessionStorage.removeItem(AUTH_KEY); } catch (e) {}
+  }
+
+  // ---------------------------------------------------------------------
+  // Login Widget ufficiale (https://core.telegram.org/widgets/login)
+  // data-request-access="write" -> compare l'opzione "Allow messages"
+  // ---------------------------------------------------------------------
+  function mountLoginWidget() {
+    var box = document.getElementById('widget');
+    if (box.childNodes.length) return;
     var s = document.createElement('script');
     s.src = 'https://telegram.org/js/telegram-widget.js?22';
     s.async = true;
-    s.setAttribute('data-telegram-login', 'italiangraygb_bot');
+    s.setAttribute('data-telegram-login', BOT_USERNAME);
     s.setAttribute('data-size', 'large');
     s.setAttribute('data-request-access', 'write');
     s.setAttribute('data-onauth', 'onTelegramAuth(user)');
-    document.getElementById('widget').appendChild(s);
-  })();
-
-  function onTelegramAuth(user) {
-    if (!user || !user.id) return;
-    // Il Login Widget (a differenza delle Mini App) NON fornisce un campo
-    // "initData": passa i dati come oggetto piatto. Lo ricostruiamo qui
-    // nello stesso formato query-string che il backend sa verificare.
-    var initData = Object.keys(user)
-      .filter(function (k) {
-        return user[k] !== undefined && user[k] !== null && user[k] !== '';
-      })
-      .map(function (k) { return k + '=' + encodeURIComponent(user[k]); })
-      .join('&');
-    sessionStorage.setItem('igb_initData', initData);
-    enterGB();
+    s.onerror = function () {
+      document.getElementById('landingStatus').textContent =
+        'Could not load the Telegram login. Check your connection and reload the page.';
+    };
+    box.appendChild(s);
   }
 
+  // Il widget passa: id, first_name, last_name, username, photo_url,
+  // auth_date, hash. Vanno inviati al backend esattamente come ricevuti,
+  // altrimenti la firma non corrisponde.
+  window.onTelegramAuth = function (user) {
+    if (!user || !user.id || !user.hash) return;
+    var auth = {};
+    Object.keys(user).forEach(function (k) {
+      var v = user[k];
+      if (typeof v === 'string' || typeof v === 'number') auth[k] = v;
+    });
+    if (!auth.username) {
+      document.getElementById('landingStatus').textContent =
+        'Your Telegram account has no @username. Set one in Telegram settings, then log in again.';
+      return;
+    }
+    saveAuth(auth);
+    enterGB();
+  };
+
+  // ---------------------------------------------------------------------
+  // API
+  // ---------------------------------------------------------------------
   function api(action, extra) {
-    var body = Object.assign(
-      { action: action, initData: sessionStorage.getItem('igb_initData') || '' },
-      extra || {}
-    );
-    // Content-Type text/plain per evitare la preflight CORS su Apps Script
+    var body = { action: action, auth: loadAuth() };
+    if (extra) Object.keys(extra).forEach(function (k) { body[k] = extra[k]; });
+    // text/plain evita la preflight CORS con Apps Script
     return fetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify(body)
-    }).then(function (r) { return r.json(); });
+    }).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(function (res) {
+      if (res && res.authError) {
+        logout(res.error);
+        throw { handled: true };
+      }
+      return res || { ok: false, error: 'Empty response.' };
+    });
   }
 
+  // ---------------------------------------------------------------------
+  // Helper DOM (textContent: niente HTML dai dati utente)
+  // ---------------------------------------------------------------------
+  function h(tag, className, text) {
+    var e = document.createElement(tag);
+    if (className) e.className = className;
+    if (text !== undefined && text !== null) e.textContent = String(text);
+    return e;
+  }
+  function row(label, value, extraClass) {
+    var r = h('div', 'row' + (extraClass ? ' ' + extraClass : ''));
+    r.appendChild(h('span', 'n', label));
+    r.appendChild(h('span', 'v', value));
+    return r;
+  }
+  function card(title) {
+    var c = h('div', 'card');
+    if (title) c.appendChild(h('h3', null, title));
+    return c;
+  }
   function setStatus(msg, cls) {
     var s = document.getElementById('status');
     s.textContent = msg || '';
     s.className = cls || '';
   }
+  function content() { return document.getElementById('gbContent'); }
+  function showMessage(title, text, cls) {
+    var c = content();
+    c.innerHTML = '';
+    var box = card(title);
+    box.appendChild(h('div', cls || 'muted', text));
+    c.appendChild(box);
+  }
+
+  // ---------------------------------------------------------------------
+  // Flusso
+  // ---------------------------------------------------------------------
+  var busy = false;
 
   function enterGB() {
     document.getElementById('landing').classList.add('hidden');
     document.getElementById('gb').classList.remove('hidden');
-    document.getElementById('gbContent').innerHTML =
-      '<div class="card"><div class="muted">Ti sto portando al modulo d\'ordine…</div></div>';
-    api('getFormUrl').then(function (res) {
-      if (!res.ok || !res.url) {
-        document.getElementById('gbContent').innerHTML =
-          '<div class="card"><span class="warn"></span></div>';
-        document.querySelector('#gbContent .warn').textContent =
-          res.error || 'Errore';
+    setStatus('');
+    load();
+  }
+
+  function logout(message) {
+    clearAuth();
+    document.getElementById('gb').classList.add('hidden');
+    document.getElementById('landing').classList.remove('hidden');
+    document.getElementById('landingStatus').textContent = message || '';
+    setStatus('');
+    content().innerHTML = '';
+    mountLoginWidget();
+  }
+
+  function load() {
+    if (!content().childNodes.length) {
+      showMessage(null, 'Loading your order…');
+    }
+    return api('getOrder').then(function (res) {
+      if (!res.ok) {
+        showMessage('📦 Order', res.error || 'Something went wrong.', 'warn');
         return;
       }
-      window.top.location.href = res.url;
-    }).catch(function () {
-      document.getElementById('gbContent').innerHTML =
-        '<div class="card"><span class="warn">Errore di connessione. Riprova.</span></div>';
+      if (res.noOrder) renderNoOrder(res);
+      else renderOrder(res.order, res);
+    }).catch(function (err) {
+      if (err && err.handled) return;
+      showMessage('📦 Order', 'Connection error. Check your connection and tap Refresh.', 'warn');
     });
   }
 
-  document.getElementById('logoutBtn').onclick = function () {
-    sessionStorage.removeItem('igb_initData');
-    document.getElementById('gb').classList.add('hidden');
-    document.getElementById('landing').classList.remove('hidden');
+  function renderNoOrder(res) {
+    var c = content();
+    c.innerHTML = '';
+    var box = card('📦 Order');
+    if (res.isAdmin) {
+      box.appendChild(h('div', null,
+        'You are the admin: no order is linked to this username. Use /recap in the group for the summary.'));
+    } else {
+      box.appendChild(h('div', null, 'No iGB order found for this Telegram account yet.'));
+      box.appendChild(h('div', 'muted',
+        'Fill in the order form using this same @username, then come back and tap Refresh.'));
+      if (res.formUrl) {
+        var a = h('a', 'btn', 'Open the order form');
+        a.href = res.formUrl;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        box.appendChild(a);
+      }
+    }
+    c.appendChild(box);
+    appendBotLink(c, res.botLink);
+  }
+
+  function renderOrder(o, res) {
+    var c = content();
+    c.innerHTML = '';
+
+    // Riepilogo ordine
+    var orderCard = card('📦 ' + (o.tgName || 'Your order'));
+    if (o.orderId) orderCard.appendChild(h('div', 'muted', 'Order ' + o.orderId));
+    (o.items || []).forEach(function (it) {
+      orderCard.appendChild(row(it.qty + '× ' + it.name, it.lineTotal));
+    });
+    orderCard.appendChild(row('Total: ' + o.totalItems + ' pcs', o.totalPrice, 'total'));
+    c.appendChild(orderCard);
+
+    if (o.shipped) {
+      var shippedCard = card();
+      shippedCard.appendChild(h('div', 'ok', '📦 Shipped! Nothing else to do.'));
+      c.appendChild(shippedCard);
+    }
+
+    // Pagamento
+    var pay = card('💳 Payment');
+    if (o.paymentConfirmed) {
+      pay.appendChild(h('div', 'ok', 'Confirmed ✓'));
+    } else if (o.paymentToCheck) {
+      pay.appendChild(h('div', 'wait', 'Reported, waiting for verification'));
+    } else {
+      pay.appendChild(h('div', 'warn', 'Not paid yet'));
+      pay.appendChild(h('div', 'muted',
+        'After paying, tap the button below and upload your proof of payment.'));
+      var paidBtn = h('button', null, 'I have paid');
+      paidBtn.type = 'button';
+      paidBtn.onclick = function () { markPaid(paidBtn); };
+      pay.appendChild(paidBtn);
+    }
+    if (o.proofReceived) pay.appendChild(h('div', 'muted', 'Proof of payment received.'));
+
+    // Proof del pagamento (finche' il pagamento non e' confermato)
+    if (o.canUploadProof) {
+      pay.appendChild(h('div', 'muted',
+        (o.proofReceived ? 'Upload a new proof only if the previous one was wrong. ' : '') +
+        'Bank transfer screenshot or PDF (JPG, PNG or PDF, max 10 MB).'));
+      addUploader(pay, 'proof', o.proofReceived ? 'Replace proof' : 'Upload proof');
+    }
+    c.appendChild(pay);
+
+    // Etichetta di spedizione
+    var lab = card('🏷 Shipping label');
+    if (o.labelProvided) {
+      lab.appendChild(h('div', 'ok', 'Received ✓'));
+      if (o.labelStatus) lab.appendChild(h('div', 'muted', 'Status: ' + o.labelStatus));
+    } else {
+      lab.appendChild(h('div', 'warn', 'Not sent yet'));
+    }
+    if (o.canUploadLabel) {
+      lab.appendChild(h('div', 'muted',
+        (o.labelProvided ? 'Upload a new label only if the previous one was wrong. ' : '') +
+        'PDF, JPG or PNG, max 10 MB.'));
+      addUploader(lab, 'label', o.labelProvided ? 'Replace label' : 'Upload label');
+    } else if (!o.labelProvided && !o.shipped) {
+      lab.appendChild(h('div', 'muted', 'You can upload it once your payment is confirmed.'));
+    }
+    c.appendChild(lab);
+
+    if (o.notes) {
+      var notes = card('📝 Notes');
+      notes.appendChild(h('div', 'muted notes', o.notes));
+      c.appendChild(notes);
+    }
+    appendBotLink(c, res && res.botLink);
+  }
+
+  function appendBotLink(container, botLink) {
+    if (!botLink) return;
+    var box = card();
+    box.appendChild(h('div', 'muted', 'You can also check your order and send files through the bot.'));
+    var a = h('a', 'btn secondary', 'Open the bot');
+    a.href = botLink;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    box.appendChild(a);
+    container.appendChild(box);
+  }
+
+  function addUploader(container, kind, label) {
+    var input = h('input');
+    input.type = 'file';
+    input.accept = 'application/pdf,image/jpeg,image/png,.pdf,.jpg,.jpeg,.png';
+    container.appendChild(input);
+    var btn = h('button', null, label);
+    btn.type = 'button';
+    btn.onclick = function () { uploadFile(kind, input, btn); };
+    container.appendChild(btn);
+  }
+
+  function markPaid(btn) {
+    if (busy) return;
+    busy = true;
+    btn.disabled = true;
+    setStatus('Saving…');
+    api('markPaid').then(function (res) {
+      setStatus(res.ok ? res.message : res.error, res.ok ? 'ok' : 'warn');
+      return load();
+    }).catch(function (err) {
+      if (!(err && err.handled)) setStatus('Connection error. Try again.', 'warn');
+    }).then(function () {
+      busy = false;
+      btn.disabled = false;
+    });
+  }
+
+  function uploadFile(kind, input, btn) {
+    if (busy) return;
+    var f = input.files && input.files[0];
+    if (!f) { setStatus('Choose a file first.', 'warn'); return; }
+    if (f.size > MAX_FILE_BYTES) { setStatus('File too large (max 10 MB).', 'warn'); return; }
+    var type = (f.type || '').toLowerCase();
+    var byName = /\.(pdf|jpe?g|png)$/i.test(f.name || '');
+    if (ACCEPTED_TYPES.indexOf(type) === -1 && !byName) {
+      setStatus('Unsupported format. Use PDF, JPG or PNG.', 'warn');
+      return;
+    }
+
+    busy = true;
+    btn.disabled = true;
+    setStatus('Uploading…');
+    var reader = new FileReader();
+    reader.onerror = function () {
+      busy = false;
+      btn.disabled = false;
+      setStatus('Could not read the file. Try again.', 'warn');
+    };
+    reader.onload = function () {
+      var b64 = String(reader.result).split(',')[1] || '';
+      api('uploadFile', { kind: kind, fileBase64: b64 }).then(function (res) {
+        setStatus(res.ok ? res.message : res.error, res.ok ? 'ok' : 'warn');
+        if (res.ok) input.value = '';
+        return load();
+      }).catch(function (err) {
+        if (!(err && err.handled)) setStatus('Upload failed. Try again.', 'warn');
+      }).then(function () {
+        busy = false;
+        btn.disabled = false;
+      });
+    };
+    reader.readAsDataURL(f);
+  }
+
+  document.getElementById('logoutBtn').onclick = function () { logout(); };
+  document.getElementById('refreshBtn').onclick = function () {
+    if (busy) return;
     setStatus('');
+    load();
   };
 
-  // Se c'e' ancora una sessione valida (refresh della pagina) vai dritto al Form
-  if (sessionStorage.getItem('igb_initData')) {
+  // Avvio: se c'e' una sessione salvata vai dritto all'area GB,
+  // altrimenti mostra il login.
+  if (loadAuth()) {
     enterGB();
+  } else {
+    mountLoginWidget();
   }
 </script>
 </body>
